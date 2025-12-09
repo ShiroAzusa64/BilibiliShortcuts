@@ -54,3 +54,10 @@ document.addEventListener("keydown", function(event) {
         simulateKeyDown(39, 'ArrowRight', 'ArrowRight');
     }
 }, true);
+
+document.addEventListener('keydown', function(event) {
+  if (event.key === 'Escape' || event.keyCode === 27) {
+    event.preventDefault();
+    chrome.runtime.sendMessage({action: "closeCurrentTab"});
+  }
+});
