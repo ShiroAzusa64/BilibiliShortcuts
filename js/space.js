@@ -17,7 +17,7 @@ function switchTo(index){
 function handleKey(event){
     console.log(event.key);
     switch (true){
-        case event.key=="ArrowRight":
+        case ["ArrowRight","Digit1"].includes(event.key):
             var index=getIndex();
             if(index!=null){
             switchTo(index+1);
@@ -25,7 +25,7 @@ function handleKey(event){
                 switchTo(0);
             }
             break;
-        case event.key=="ArrowLeft":
+        case ["ArrowLeft","Digit2"].includes(event.key):
             var index=getIndex();
             if(index!=null){
             switchTo(index-1);
@@ -39,7 +39,7 @@ function handleKey(event){
                 target[0].click();
             }
             break;
-        case event.key==='/':
+        case ["/","z"].includes(event.key):
             document.querySelectorAll('.bili-dyn-card-video__title.bili-ellipsis.fs-medium')[0].click()
         break;
     }
