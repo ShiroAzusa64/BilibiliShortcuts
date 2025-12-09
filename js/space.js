@@ -17,7 +17,7 @@ function switchTo(index){
 function handleKey(event){
     console.log(event.key);
     switch (true){
-        case ["ArrowRight","Digit1"].includes(event.key):
+        case ["ArrowRight","2"].includes(event.key):
             var index=getIndex();
             if(index!=null){
             switchTo(index+1);
@@ -25,7 +25,7 @@ function handleKey(event){
                 switchTo(0);
             }
             break;
-        case ["ArrowLeft","Digit2"].includes(event.key):
+        case ["ArrowLeft","1"].includes(event.key):
             var index=getIndex();
             if(index!=null){
             switchTo(index-1);
