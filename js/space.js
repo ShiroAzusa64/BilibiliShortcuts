@@ -12,7 +12,13 @@ function getIndex() {
     return null;
 }
 function switchTo(index){
-    getTarget()[index].click();
+    var avatar=getTarget()[index];
+    avatar.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+        inline: 'center'
+    });
+    avatar.click()
 }
 function handleKey(event){
     console.log(event.key);
@@ -41,6 +47,9 @@ function handleKey(event){
             break;
         case ["/","z"].includes(event.key):
             document.querySelectorAll('.bili-dyn-card-video__title.bili-ellipsis.fs-medium')[0].click()
+        break;
+        case ["Escape"].includes(event.key):
+            chrome.runtime.sendMessage({action: "closeCurrentTab"});
         break;
     }
 }
