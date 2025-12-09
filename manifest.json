@@ -1,0 +1,24 @@
+{
+    "manifest_version": 3,
+    "name": "BilibiliHelper",
+    "description": "Bilibili Helper",
+    "version": "0.0.1",
+    "permissions": [
+        "activeTab"
+    ],
+    "host_permissions": [
+    "https://*.bilibili.com/*"
+    ],
+    "content_scripts": [{
+        "matches": ["*://www.bilibili.com/?*"],
+        "js": ["js/index.js"]
+    },
+    {
+        "matches": ["*://t.bilibili.com/?*"],
+        "js": ["js/space.js"]
+    },
+    {
+        "matches": ["*://www.bilibili.com/video/*"],
+        "js": ["js/video.js"]
+    }]
+}
