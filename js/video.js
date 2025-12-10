@@ -37,13 +37,13 @@ function simulateKeyup(keyCode, code, key) {
 }
 
 document.addEventListener("keyup", (event) =>{
-    if(event.key==="/"){
+    if(['z','/'].includes(event.key)){
         document.querySelectorAll('.video-like.video-toolbar-left-item')[0].click()
     }
 }, true);
 var KeyStatus=true;
 document.addEventListener("keydown", (event) => {
-    if (['Shift','1','2'].includes(event.key)) { // Key '1'
+    if (['Shift','1','2'].includes(event.key)) {
         event.preventDefault();
         // Simulate pressing the right arrow key
         if(KeyStatus){
