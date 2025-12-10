@@ -8,21 +8,14 @@ shortcuts.push('/qcv'.split(''))
 shortcuts.push('\'ab'.split(''))
 shortcuts.push(']znm'.split(''))
 let space='Backspace'
-let flip=['Control','Shift','Alt','\\','1'];
-let cancel=['2'];
+let flip=['Control','Shift','Alt','\\','1','ArrowUp','ArrowRight'];
+let cancel=['2','ArrowLeft','ArrowDown'];
 
 class videoHistory{
     videoHistorys=[];
     index=0;
     maxLength=10;
     constructor(){
-        console.log("constructed")
-        pageLoaded().then(() => {
-                let node=getVideoCardList().map(a => {return a.cloneNode(true);});
-                node.forEach(a=>{a.className = " history";});
-                this.push(node);
-            });
-        console.log(this.videoHistorys[0])
     }
     push(slice){
         if(this.videoHistorys.length<this.maxLength){
@@ -32,24 +25,24 @@ class videoHistory{
                 this.videoHistorys.unshift(slice);
         }
     }
-    checkout(indexa){
+    checkout(index){
 
             var tmp=document.querySelector(".container")
             switch(true){
-                case indexa==0: //logically only -1 -> 0
+                case index==0: //logically only -1 -> 0
                     Array.from(document.querySelectorAll('.history')).forEach(a =>{a.remove()});
                     getVideoCardList().forEach((item)=>{item.style.display=''});
                     break;
-                case indexa==1:
+                case index==1:
                     getVideoCardList().forEach((item)=>{item.style.display='none'});
                     Array.from(document.querySelectorAll('.history')).forEach(a =>{a.remove()});
-                    insertBeforeFirstChild(tmp,this.videoHistorys[indexa].map(a=>{return a}))
+                    insertBeforeFirstChild(tmp,this.videoHistorys[index-1].map(a=>{return a}))
                     break;
                 default:
                     console.log('general case')
                     Array.from(document.querySelectorAll('.history')).forEach(a =>{a.remove()});
                     Array.from(document.querySelectorAll('.history')).forEach(a =>{a.remove()});
-                    insertBeforeFirstChild(tmp,this.videoHistorys[indexa].map(a=>{return a}))
+                    insertBeforeFirstChild(tmp,this.videoHistorys[index-1].map(a=>{return a}))
 
                     break;
             }
@@ -59,14 +52,12 @@ class videoHistory{
         if(this.index<0){
             Array.from(document.querySelectorAll('.history')).forEach(a =>{a.remove()});
             getVideoCardList().forEach((item)=>{item.style.display=''});
-            refreshVideos();
-            pageLoaded().then(() => {
-                let node=getVideoCardList().map(a => {return a.cloneNode(true);});
+            let node=getVideoCardList().map(a => {return a.cloneNode(true);});
                 node.forEach(a=>{a.className = " history";});
                 this.push(node);
                 console.log(this.videoHistorys[0])
-            this.index=0
-            });
+                this.index=0
+            refreshVideos();
         }else{
             console.log("advance head:"+this.index)
             console.log("access: "+(this.index)+" all: "+(this.videoHistorys.length));
@@ -75,7 +66,7 @@ class videoHistory{
     }
     rewind(){
         this.index++;
-        if(this.index<this.videoHistorys.length){
+        if(this.index<=this.videoHistorys.length){
             console.log("rewind head:"+this.index)
             console.log("access: "+(this.index)+" all: "+(this.videoHistorys.length));
             this.checkout(this.index);
