@@ -1,13 +1,4 @@
-function handleKey(event){
-    if(event.key==="Shift"){
-        document.querySelectorAll('.video-like.video-toolbar-left-item')[0].click()
-    }else if (event.code === 'Digit2') { // Key '1'
-        event.preventDefault();
-
-        // Simulate pressing the right arrow key
-        simulateKeyup(39, 'ArrowRight', 'ArrowRight');
-    }
-}
+console.log('Bilibili helper');
 function simulateKeyDown(keyCode, code, key) {
     const event = new KeyboardEvent('keydown', {
         keyCode: keyCode,
@@ -45,19 +36,25 @@ function simulateKeyup(keyCode, code, key) {
     return document.activeElement.dispatchEvent(event);
 }
 
-document.addEventListener("keyup", handleKey, true);
-document.addEventListener("keydown", function(event) {
-    if (event.code === 'Digit1') { // Key '1'
-        event.preventDefault();
-
-        // Simulate pressing the right arrow key
-        simulateKeyDown(39, 'ArrowRight', 'ArrowRight');
+document.addEventListener("keyup", (event) =>{
+    if(event.key==="/"){
+        document.querySelectorAll('.video-like.video-toolbar-left-item')[0].click()
     }
 }, true);
-
-document.addEventListener('keydown', function(event) {
-  if (event.key === 'Escape' || event.keyCode === 27) {
+var KeyStatus=true;
+document.addEventListener("keydown", (event) => {
+    if (['Shift','1','2'].includes(event.key)) { // Key '1'
+        event.preventDefault();
+        // Simulate pressing the right arrow key
+        if(KeyStatus){
+            simulateKeyDown(39, 'ArrowRight', 'ArrowRight');
+            KeyStatus=false;
+        }else{
+            simulateKeyup(39, 'ArrowRight', 'ArrowRight');
+            KeyStatus=true;
+        }
+    }else if (['Escape','\\'].includes(event.key)) {
     event.preventDefault();
     chrome.runtime.sendMessage({action: "closeCurrentTab"});
   }
-});
+}, true);
