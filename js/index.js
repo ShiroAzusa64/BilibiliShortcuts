@@ -7,8 +7,8 @@ shortcuts.push('[xiop'.split(''))
 shortcuts.push('/qcv'.split(''))
 shortcuts.push('\'ab'.split(''))
 shortcuts.push(']znm'.split(''))
-let space='Backspace'
-let flip=['Control','Shift','Alt','\\','1','ArrowUp','ArrowRight'];
+let space='\\'
+let flip=['Control','Shift','Alt','1','ArrowUp','ArrowRight'];
 let cancel=['2','ArrowLeft','ArrowDown'];
 
 class videoHistory{
