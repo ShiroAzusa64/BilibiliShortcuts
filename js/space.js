@@ -53,4 +53,4 @@ function handleKey(event){
         break;
     }
 }
-document.addEventListener("keyup", handleKey, true);
+document.addEventListener("keydown", handleKey, true);
