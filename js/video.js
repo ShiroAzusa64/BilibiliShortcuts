@@ -54,7 +54,9 @@ document.addEventListener("keydown", (event) => {
             KeyStatus=true;
         }
     }else if (['Escape','\\'].includes(event.key)) {
-    event.preventDefault();
-    chrome.runtime.sendMessage({action: "closeCurrentTab"});
+        if(document.querySelectorAll(".pswp").length<1){
+            event.preventDefault();
+            chrome.runtime.sendMessage({action: "closeCurrentTab"});
+        }
   }
 }, true);
