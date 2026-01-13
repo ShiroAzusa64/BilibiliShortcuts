@@ -11,6 +11,8 @@ let space='\\'
 let flip=['Control','Shift','Alt','1','ArrowUp','ArrowRight'];
 let cancel=['2','ArrowLeft','ArrowDown'];
 
+let refreshButton=document.querySelector('.feed-roll-btn button');
+
 class videoHistory{
     videoHistorys=[];
     index=0;
@@ -26,7 +28,6 @@ class videoHistory{
         }
     }
     checkout(index){
-
             var tmp=document.querySelector(".container")
             switch(true){
                 case index==0: //logically only -1 -> 0
@@ -39,7 +40,6 @@ class videoHistory{
                     insertBeforeFirstChild(tmp,this.videoHistorys[index-1].map(a=>{return a}))
                     break;
                 default:
-                    console.log('general case')
                     Array.from(document.querySelectorAll('.history')).forEach(a =>{a.remove()});
                     Array.from(document.querySelectorAll('.history')).forEach(a =>{a.remove()});
                     insertBeforeFirstChild(tmp,this.videoHistorys[index-1].map(a=>{return a}))
@@ -55,20 +55,15 @@ class videoHistory{
             let node=getVideoCardList().map(a => {return a.cloneNode(true);});
                 node.forEach(a=>{a.className = " history";});
                 this.push(node);
-                console.log(this.videoHistorys[0])
                 this.index=0
             refreshVideos();
         }else{
-            console.log("advance head:"+this.index)
-            console.log("access: "+(this.index)+" all: "+(this.videoHistorys.length));
             this.checkout(this.index);
         }
     }
     rewind(){
         this.index++;
         if(this.index<=this.videoHistorys.length){
-            console.log("rewind head:"+this.index)
-            console.log("access: "+(this.index)+" all: "+(this.videoHistorys.length));
             this.checkout(this.index);
         }else{
             this.index--;
@@ -116,7 +111,7 @@ function getVideoCardList(){
     return result
 }
 function refreshVideos(){
-    document.querySelectorAll('.primary-btn.roll-btn')[0].click();
+    refreshButton.dispatchEvent(new Event('click'));
 }
 
 const historyStack=new videoHistory();
@@ -143,5 +138,10 @@ function handleKey(event) {
             break;
     }
 }
-
 document.addEventListener("keydown", handleKey, true);
+refreshButton.addEventListener('click', function(e) {
+  if (e.isTrusted) {
+    e.stopImmediatePropagation();
+    historyStack.advance()
+  }
+}, true);
