@@ -36,27 +36,47 @@ function simulateKeyup(keyCode, code, key) {
     return document.activeElement.dispatchEvent(event);
 }
 
+var configs=(await chrome.runtime.sendMessage({type: "GET_CONFIG"})).video;
+
 document.addEventListener("keyup", (event) =>{
-    if(['z','/'].includes(event.key)){
-        document.querySelectorAll('.video-like.video-toolbar-left-item')[0].click()
+    var action=Object.keys(configs).find((key) => {
+        return configs[key].includes(event.key);
+    });
+    switch (action){
+        try{
+            case "keylist_like":
+                document.querySelectorAll('.video-like.video-toolbar-left-item')[0].click()
+                break;
+        }catch(e){
+
+        }
     }
 }, true);
-var KeyStatus=true;
+var toggleVideoPlaybackRate=false;
 document.addEventListener("keydown", (event) => {
-    if (['Shift','1','2'].includes(event.key)) {
-        event.preventDefault();
-        // Simulate pressing the right arrow key
-        if(KeyStatus){
-            simulateKeyDown(39, 'ArrowRight', 'ArrowRight');
-            KeyStatus=false;
-        }else{
-            simulateKeyup(39, 'ArrowRight', 'ArrowRight');
-            KeyStatus=true;
+    var action=Object.keys(configs).find((key) => {
+        return configs[key].includes(event.key);
+    });
+    switch (action){
+        try{
+            case "keylist_accelate":
+                event.preventDefault();
+                if(toggleVideoPlaybackRate){
+                    simulateKeyup(39, 'ArrowRight', 'ArrowRight');
+                    toggleVideoPlaybackRate=false;
+                }else{
+                    simulateKeyDown(39, 'ArrowRight', 'ArrowRight');
+                    toggleVideoPlaybackRate=true;
+                }
+                break;
+            case "keylist_exit":
+                if(document.querySelectorAll(".pswp").length<1){
+                    event.preventDefault();
+                    chrome.runtime.sendMessage({action: "closeCurrentTab"});
+                }
+                break;
+        }catch(e){
+
         }
-    }else if (['Escape','\\'].includes(event.key)) {
-        if(document.querySelectorAll(".pswp").length<1){
-            event.preventDefault();
-            chrome.runtime.sendMessage({action: "closeCurrentTab"});
-        }
-  }
+    }
 }, true);
