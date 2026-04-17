@@ -23,5 +23,14 @@
     {
         "matches": ["*://www.bilibili.com/video/*"],
         "js": ["js/video.js"]
+    }],
+    "action": {
+    "default_popup": "popup.html",
+    "default_title": "AI Configure"
+    },
+    "web_accessible_resources": [
+    {
+      "resources": ["key_config.json"],
+      "matches": []
     }]
 }
