@@ -1,18 +1,17 @@
+var config;
 async function getConfig() {
-    var config=await chrome.storage.local.get()
-    var config_object=await JSON.parse(config);
-    return config_object;
+    config=await chrome.storage.local.get()
 }
 
-loadConfig();
+getConfig();
 
-chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener(async (msg, sender, sendResponse) => {
   switch(msg.type){
     case 'GET_CONFIG':
-      sendResponse({ success: true, data:await getConfig()});
+      sendResponse({ success: true, data:config});
       break;
     case 'CONFIG_SAVED':
-      loadConfig();
+      getConfig();
       break;
     case 'PAGE_EXIT':
       if(sender.tab && sender.tab.id){

@@ -1,0 +1,20 @@
+{
+    "space":{
+        "keylist_next":["ArrowRight","2"],
+        "keylist_previous":["ArrowLeft","1"],
+        "keylist_like":["Shift"],
+        "keylist_enter":["/","z"],
+        "keylist_exit":["Escape","\\"]
+    },
+    "video":{
+        "keylist_like":["/","z"],
+        "keylist_exit":["Escape","\\"],
+        "keylist_accelate":["Shift","1","2"]
+    },
+    "index":{
+        "keylist_next":["Control","Shift","Alt","1","ArrowUp","ArrowRight"],
+        "keylist_prev":["2","ArrowLeft","ArrowDown"],
+        "keylist_space":["\\"],
+        "keystruct_enter":[[".","w"],[";","s"],["[","x"],["/","q"],["'","a"],["]","z"]]
+    }
+}

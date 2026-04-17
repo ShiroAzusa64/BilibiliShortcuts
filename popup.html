@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>AI Configure</title>
+  <style>
+    body {font-family: sans-serif; width: 320px; padding: 15px;}
+    input, button {width: 100%; padding: 8px; margin: 8px 0;}
+    button {background: #4285f4; color: white; border: none;}
+    button:active {
+      background-color: #2b6bcb;
+      transform: translateY(1px);
+    }
+    .status {color: green; font-size: 0.9em; margin-top: 10px;}
+  </style>
+</head>
+<body>
+  <h3>Key Config</h3>
+  <input id="textarea" placeholder="please input json config,leave space to load the default">
+  <button id="save">Save</button>
+  <div id="status" class="status"></div>
+  <script src="js/popup.js" type="module"></script>
+</body>
+</html>

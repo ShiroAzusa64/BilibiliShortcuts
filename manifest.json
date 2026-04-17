@@ -4,13 +4,15 @@
     "description": "Bilibili Helper",
     "version": "0.0.1",
     "permissions": [
-        "activeTab"
+        "activeTab",
+        "storage"
     ],
     "host_permissions": [
     "https://*.bilibili.com/*"
     ],
     "background": {
-    "service_worker": "js/background.js"
+    "service_worker": "js/background.js",
+    "type": "module"
     },
     "content_scripts": [{
         "matches": ["*://www.bilibili.com/?*"],

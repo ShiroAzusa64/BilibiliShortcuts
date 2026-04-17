@@ -1,17 +1,6 @@
 console.log("Bilibili helper");
 
-let shortcuts=[]
-shortcuts.push('.wer'.split(''))
-shortcuts.push(';styu'.split(''))
-shortcuts.push('[xiop'.split(''))
-shortcuts.push('/qcv'.split(''))
-shortcuts.push('\'ab'.split(''))
-shortcuts.push(']znm'.split(''))
-let space='\\'
-let flip=['Control','Shift','Alt','1','ArrowUp','ArrowRight'];
-let cancel=['2','ArrowLeft','ArrowDown'];
-
-var configs=(await chrome.runtime.sendMessage({type: "GET_CONFIG"})).index;
+var configs;
 
 let refreshButton=document.querySelector('.feed-roll-btn button');
 
@@ -20,31 +9,9 @@ class videoHistory{
     depth=0;
     status="head";
     constructor(length){
-        videoHistorys=fixedArray(length);
+        this.videoHistorys=new fixedArray(length);
     }
-    async advance(){
-        if(this.status=="head"){
-            this.status="head->refresh"
-            #recordCurrentCard();
-            #getNewVideo();
-            return;
-        }
-        if(this.status=="history"){
-            depth--;
-            var targetStatus;
-            if(depth==0){
-                this.status="history->head";
-                targetStatus="head";
-            }else{
-                this.status="history->history+";
-                targetStatus="history";
-            }
-            #removeOldCard();
-            #getNewVideo();
-            this.status=targetStatus;
-        }
-    }
-    async #getNewVideo(){
+        async #getNewVideo(){
         if(this.status=="head->refresh"){
             function hashCode(str) {
                 let hash = 0;
@@ -55,71 +22,97 @@ class videoHistory{
                 }
                 return hash;
             }
-            var hash=hashCode(getVideoBVList().join());
+            var hash=getVideoBVList().join();
             refreshVideos();
             while(hash==hashCode(getVideoBVList().join())){
-                    await new Promise((resolve)=>{setTimeout(50,resolve)});
+                    await new Promise((resolve)=>{setTimeout(resolve,100)});
             }
             this.status="head";
             return;
         }
         if(this.status=="history->head"){
             getVideoCardList().forEach((item)=>{item.style.display=''});
+            this.status="head";
             return;
         }
         if(this.status=="head->history"){
             checkout(this.videoHistorys.refprev());
+            this.status="history";
         }
         if(this.status=="history->history+"){
             checkout(this.videoHistorys.refnext());
+            this.status="history";
         }
         if(this.status=="history->history-"){
             checkout(this.videoHistorys.refprev());
+            this.status="history";
         }
     }
     #recordCurrentCard(){
-        this.push(getVideoCardList().map(videos => { var video=videos.cloneNode(true);
+        this.videoHistorys.push(getVideoCardList().map(videos => { var video=videos.cloneNode(true);
                 video.className="history";
                 return video;
             }));
     }
     #removeOldCard(){
-        if(status=="history->history+"){
+        if(this.status=="history->history+"){
             Array.from(document.querySelectorAll('.history')).forEach(a =>{a.remove()});
             return;
         }
-        if(status=="history->history-"){
+        if(this.status=="history->history-"){
             Array.from(document.querySelectorAll('.history')).forEach(a =>{a.remove()});
             return;
         }
-        if(status=="history->head"){
+        if(this.status=="history->head"){
             Array.from(document.querySelectorAll('.history')).forEach(a =>{a.remove()});
             return;
         }
-        if(status=="head->history"){
+        if(this.status=="head->history"){
             getVideoCardList().forEach((item)=>{item.style.display='none'});
             return;
+        }
+    }
+    async advance(){
+        if(this.status=="head"){
+            this.status="head->refresh"
+            this.#recordCurrentCard();
+            this.#getNewVideo();
+            return;
+        }
+        if(this.status=="history"){
+            this.depth--;
+            var targetStatus;
+            if(this.depth==0){
+                this.status="history->head";
+                targetStatus="head";
+            }else{
+                this.status="history->history+";
+                targetStatus="history";
+            }
+            this.#removeOldCard();
+            this.#getNewVideo();
+            this.status=targetStatus;
         }
     }
     rewind(){
         if(this.status=="head"){
             this.status="head->history"
-            depth++;
-            #removeOldCard();
-            #getNewVideo();
+            this.depth++;
+            this.#removeOldCard();
+            this.#getNewVideo();
             return;
         }
         if(this.status=="history"){
             var targetStatus;
-            if(Math.abs(depth)==videoHistorys.length){
+            if(Math.abs(this.depth)==this.videoHistorys.length){
                 return;
             }else{
-                depth++;
+                this.depth++;
                 this.status="history->history-";
                 targetStatus="history";
             }
-            #removeOldCard();
-            #getNewVideo();
+            this.#removeOldCard();
+            this.#getNewVideo();
             this.status=targetStatus;
         }
     }
@@ -158,17 +151,13 @@ function insertBeforeFirstChild(targetNode, domArray) {
     if (!targetNode || !domArray || domArray.length === 0) {
         return;
     }
-
-    // 获取第一个子元素
     const firstChild = targetNode.firstChild;
 
     if (firstChild) {
-        // 从最后一个元素开始插入，确保顺序正确
         for (let i = 0;i< domArray.length; i++) {
             targetNode.insertBefore(domArray[i], firstChild);
         }
     } else {
-        // 如果没有子元素，直接追加到末尾
         domArray.forEach(element => {
             targetNode.appendChild(element);
         });
@@ -176,11 +165,15 @@ function insertBeforeFirstChild(targetNode, domArray) {
 }
 
 function getVideoBVList(){
-    return Array.from(document.querySelectorAll('.bili-video-card__info--tit > a')).map((node)=>{return node.childNodes[0].getAttribute("href").split("?")[0].match(/BV.*/)[0]});;
+    return Array.from(document.querySelectorAll('.bili-video-card__info--tit > a')).map((node)=>{return node.getAttribute("href").split("?")[0].match(/BV.*/)});
 }
 function getVideoCardList(){
     var result= Array.from(document.querySelectorAll('.container > .feed-card'));
     return result
+}
+
+function getVideoList(){
+    return document.querySelectorAll('.bili-video-card__info--tit > a');
 }
 
 function refreshVideos(){
@@ -189,14 +182,16 @@ function refreshVideos(){
 
 const historyStack=new videoHistory();
 
-function handleKey(event) {
+async function handleKey(event) {
+    config=await chrome.runtime.sendMessage({type: "GET_CONFIG"});
+    config=config.data.index;
     var index;
-    var action=Object.keys(configs).find((key) => {
+    var action=Object.keys(config).find((key) => {
         if(key.includes("keystruct")){
-            index=config.keystruct_enter.findIndex((key)=>{return shortcuts[i].includes(event.key)});
+            index=config.keystruct_enter.findIndex((key)=>{return key.includes(event.key)});
             return index<0?false:true;
         }
-        return configs[key].includes(event.key);
+        return config[key].includes(event.key);
     });
     switch(action){
         case "keystruct_enter":
