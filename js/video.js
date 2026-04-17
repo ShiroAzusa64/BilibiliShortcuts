@@ -36,47 +36,46 @@ function simulateKeyup(keyCode, code, key) {
     return document.activeElement.dispatchEvent(event);
 }
 
-var configs=(await chrome.runtime.sendMessage({type: "GET_CONFIG"})).video;
-
-document.addEventListener("keyup", (event) =>{
-    var action=Object.keys(configs).find((key) => {
-        return configs[key].includes(event.key);
+document.addEventListener("keyup", async (event) =>{
+    var config=await chrome.runtime.sendMessage({type: "GET_CONFIG"});
+    config=config.data.video;
+    var action=Object.keys(config).find((key) => {
+        return config[key].includes(event.key);
     });
-    switch (action){
-        try{
+    try{
+        switch (action){
             case "keylist_like":
                 document.querySelectorAll('.video-like.video-toolbar-left-item')[0].click()
-                break;
-        }catch(e){
-
+            break;
         }
+    }catch(e){
+        console.log(e);
     }
+
 }, true);
 var toggleVideoPlaybackRate=false;
-document.addEventListener("keydown", (event) => {
-    var action=Object.keys(configs).find((key) => {
-        return configs[key].includes(event.key);
+document.addEventListener("keydown", async (event) => {
+    var config=await chrome.runtime.sendMessage({type: "GET_CONFIG"});
+    config=config.data.video;
+    var action=Object.keys(config).find((key) => {
+        return config[key].includes(event.key);
     });
     switch (action){
-        try{
-            case "keylist_accelate":
+        case "keylist_accelate":
+            event.preventDefault();
+            if(toggleVideoPlaybackRate){
+                simulateKeyup(39, 'ArrowRight', 'ArrowRight');
+                toggleVideoPlaybackRate=false;
+            }else{
+                simulateKeyDown(39, 'ArrowRight', 'ArrowRight');
+                toggleVideoPlaybackRate=true;
+            }
+            break;
+        case "keylist_exit":
+            if(document.querySelectorAll(".pswp").length<1){
                 event.preventDefault();
-                if(toggleVideoPlaybackRate){
-                    simulateKeyup(39, 'ArrowRight', 'ArrowRight');
-                    toggleVideoPlaybackRate=false;
-                }else{
-                    simulateKeyDown(39, 'ArrowRight', 'ArrowRight');
-                    toggleVideoPlaybackRate=true;
-                }
-                break;
-            case "keylist_exit":
-                if(document.querySelectorAll(".pswp").length<1){
-                    event.preventDefault();
-                    chrome.runtime.sendMessage({action: "closeCurrentTab"});
-                }
-                break;
-        }catch(e){
-
-        }
+                await chrome.runtime.sendMessage({type: "PAGE_EXIT"});
+            }
+        break;
     }
 }, true);

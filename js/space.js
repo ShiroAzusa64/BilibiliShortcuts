@@ -1,7 +1,5 @@
 console.log("Bilibili helper");
 
-var configs=(await chrome.runtime.sendMessage({type: "GET_CONFIG"})).space;
-
 function getUploaders(){
     return document.querySelectorAll('.bili-dyn-up-list__item')
 }
@@ -12,44 +10,41 @@ function getCurrentIndex() {
     });
 }
 function switchTo(index){
-    var avatar=getUploaders()[index];
-    avatar.scrollIntoView({
-        behavior: 'smooth',
-        block: 'nearest',
-        inline: 'center'
-    });
-    avatar.click()
+    try{
+        var avatar=getUploaders()[index];
+        avatar.scrollIntoView({
+            behavior: 'smooth',
+            block: 'nearest',
+            inline: 'center'
+        });
+        avatar.click()
+    }catch(e){
+        switchTo(0);
+    }
 }
-function handleKey(event){
-    console.log(event.key);
+async function handleKey(event){
+    var config=await chrome.runtime.sendMessage({type: "GET_CONFIG"});
+    config=config.data.space;
     var action=Object.keys(configs).find((key) => {
-        return configs[key].includes(event.key);
+        return config[key].includes(event.key);
     });
     switch (action){
-        try{
-            case "keylist_next":
-                switchTo(getCurrentIndex()+1);
-                break;
-            case "keylist_previous":
-                switchTo(getCurrentIndex()-1);
-                break;
-        }catch(e){
-            switchTo(0);
-        }
-        try{
-            case "keylist_like:
-                var target=document.querySelectorAll('.bili-dyn-action.like');
-                target[0].click();
-                break;
-            case "keylist_enter:
-                document.querySelectorAll('.bili-dyn-card-video__title.bili-ellipsis.fs-medium')[0].click()
-                break;
-            case "keylist_exit:
-                await chrome.runtime.sendMessage({type: "TAB_EXIT"});
-                break;
-        }catch(e){
-
-        }
+        case "keylist_next":
+            switchTo(getCurrentIndex()+1);
+            break;
+        case "keylist_previous":
+            switchTo(getCurrentIndex()-1);
+            break;
+        case "keylist_like:
+            var target=document.querySelectorAll('.bili-dyn-action.like');
+            target[0].click();
+            break;
+        case "keylist_enter:
+            document.querySelectorAll('.bili-dyn-card-video__title.bili-ellipsis.fs-medium')[0].click()
+            break;
+        case "keylist_exit:
+            await chrome.runtime.sendMessage({type: "PAGE_EXIT"});
+            break;
     }
 }
 

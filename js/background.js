@@ -1,6 +1,7 @@
 var config;
 async function getConfig() {
-    config=await chrome.storage.local.get()
+    var config_raw=await chrome.storage.local.get()
+    config=config_raw.json;
 }
 
 getConfig();

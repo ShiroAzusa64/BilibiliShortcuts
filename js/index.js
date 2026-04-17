@@ -1,7 +1,5 @@
 console.log("Bilibili helper");
 
-var configs;
-
 let refreshButton=document.querySelector('.feed-roll-btn button');
 
 class videoHistory{
@@ -123,7 +121,7 @@ function checkout(nodelist){
         insertBeforeFirstChild(container,nodelist);
 }
 class fixedArray extends Array{
-    constructor(maxLength=100, ...initialItems){
+    constructor(maxLength=10, ...initialItems){
         super(...initialItems);
         this.maxLength=maxLength;
         this.pointer=0;
@@ -183,7 +181,7 @@ function refreshVideos(){
 const historyStack=new videoHistory();
 
 async function handleKey(event) {
-    config=await chrome.runtime.sendMessage({type: "GET_CONFIG"});
+    var config=await chrome.runtime.sendMessage({type: "GET_CONFIG"});
     config=config.data.index;
     var index;
     var action=Object.keys(config).find((key) => {

@@ -5,7 +5,7 @@
   <title>AI Configure</title>
   <style>
     body {font-family: sans-serif; width: 320px; padding: 15px;}
-    input, button {width: 100%; padding: 8px; margin: 8px 0;}
+    textarea, button {width: 100%; padding: 8px; margin: 8px 0;}
     button {background: #4285f4; color: white; border: none;}
     button:active {
       background-color: #2b6bcb;
@@ -16,7 +16,7 @@
 </head>
 <body>
   <h3>Key Config</h3>
-  <input id="textarea" placeholder="please input json config,leave space to load the default">
+  <textarea id="textarea" style="height: 120px;resize:vertical" rows="6" placeholder="please input json config,leave space to load the default"></textarea>
   <button id="save">Save</button>
   <div id="status" class="status"></div>
   <script src="js/popup.js" type="module"></script>
