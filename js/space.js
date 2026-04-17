@@ -1,7 +1,7 @@
 console.log("Bilibili helper");
 
 function getUploaders(){
-    return document.querySelectorAll('.bili-dyn-up-list__item')
+    return Array.from(document.querySelectorAll('.bili-dyn-up-list__item'));
 }
 function getCurrentIndex() {
     let target = getUploaders();
@@ -25,7 +25,7 @@ function switchTo(index){
 async function handleKey(event){
     var config=await chrome.runtime.sendMessage({type: "GET_CONFIG"});
     config=config.data.space;
-    var action=Object.keys(configs).find((key) => {
+    var action=Object.keys(config).find((key) => {
         return config[key].includes(event.key);
     });
     switch (action){
@@ -35,14 +35,14 @@ async function handleKey(event){
         case "keylist_previous":
             switchTo(getCurrentIndex()-1);
             break;
-        case "keylist_like:
+        case "keylist_like":
             var target=document.querySelectorAll('.bili-dyn-action.like');
             target[0].click();
             break;
-        case "keylist_enter:
+        case "keylist_enter":
             document.querySelectorAll('.bili-dyn-card-video__title.bili-ellipsis.fs-medium')[0].click()
             break;
-        case "keylist_exit:
+        case "keylist_exit":
             await chrome.runtime.sendMessage({type: "PAGE_EXIT"});
             break;
     }
