@@ -3,11 +3,11 @@ console.log("Bilibili helper");
 let refreshButton=document.querySelector('.feed-roll-btn button');
 
 class videoHistory{
-    videoHistorys;
+    historyArray=[];
     depth=0;
     status="head";
     constructor(length){
-        this.videoHistorys=new fixedArray(length);
+        this.maxLength=length || 10;
     }
         async #getNewVideo(){
         if(this.status=="head->refresh"){
@@ -34,23 +34,26 @@ class videoHistory{
             return;
         }
         if(this.status=="head->history"){
-            checkout(this.videoHistorys.refprev());
+            checkout(this.historyArray[this.depth-1]);
             this.status="history";
         }
         if(this.status=="history->history+"){
-            checkout(this.videoHistorys.refnext());
+            checkout(this.historyArray[this.depth-1]);
             this.status="history";
         }
         if(this.status=="history->history-"){
-            checkout(this.videoHistorys.refprev());
+            checkout(this.historyArray[this.depth-1]);
             this.status="history";
         }
     }
     #recordCurrentCard(){
-        this.videoHistorys.push(getVideoCardList().map(videos => { var video=videos.cloneNode(true);
+        this.historyArray.unshift(getVideoCardList().map(videos => { var video=videos.cloneNode(true);
                 video.className="history";
                 return video;
             }));
+        if(this.historyArray.length>10){
+            this.historyArray.pop();
+        }
     }
     #removeOldCard(){
         if(this.status=="history->history+"){
@@ -71,10 +74,13 @@ class videoHistory{
         }
     }
     async advance(){
+        if(this.status=="head->refresh"){
+            return;
+        }
         if(this.status=="head"){
             this.status="head->refresh"
             this.#recordCurrentCard();
-            this.#getNewVideo();
+            await this.#getNewVideo();
             return;
         }
         if(this.status=="history"){
@@ -88,21 +94,25 @@ class videoHistory{
                 targetStatus="history";
             }
             this.#removeOldCard();
-            this.#getNewVideo();
+            await this.#getNewVideo();
             this.status=targetStatus;
         }
     }
-    rewind(){
+    async rewind(){
+        if(this.status=="head->refresh"){
+            return;
+        }
         if(this.status=="head"){
             this.status="head->history"
             this.depth++;
             this.#removeOldCard();
-            this.#getNewVideo();
+            await this.#getNewVideo();
             return;
         }
         if(this.status=="history"){
             var targetStatus;
-            if(Math.abs(this.depth)==this.videoHistorys.length){
+            if(this.depth>=this.maxLength || this.depth>=this.historyArray.length){
+                this.depth=this.historyArray.length;
                 return;
             }else{
                 this.depth++;
@@ -110,7 +120,7 @@ class videoHistory{
                 targetStatus="history";
             }
             this.#removeOldCard();
-            this.#getNewVideo();
+            await this.#getNewVideo();
             this.status=targetStatus;
         }
     }
@@ -119,30 +129,6 @@ class videoHistory{
 function checkout(nodelist){
         var container=document.querySelector(".container");
         insertBeforeFirstChild(container,nodelist);
-}
-class fixedArray extends Array{
-    constructor(maxLength=10, ...initialItems){
-        super(...initialItems);
-        this.maxLength=maxLength;
-        this.pointer=0;
-    }
-    push(...items) {
-        var length=this.length + items.length;
-        if (length > this.maxLength) {
-            this.splice(0, this.maxLength - length);
-        }
-        return super.push(...items);
-    }
-    refnext(){
-        this.pointer++;
-        this.pointer=Math.abs(this.pointer)%this.length;
-        return this.at(this.pointer);
-    }
-    refprev(){
-        this.pointer--;
-        this.pointer=Math.abs(this.pointer+this.length)%this.length;
-        return this.at(this.pointer);
-    }
 }
 
 function insertBeforeFirstChild(targetNode, domArray) {
@@ -178,7 +164,7 @@ function refreshVideos(){
     refreshButton.dispatchEvent(new Event('click'));
 }
 
-const historyStack=new videoHistory();
+const historyStack=new videoHistory(10);
 
 async function handleKey(event) {
     var config=await chrome.runtime.sendMessage({type: "GET_CONFIG"});
