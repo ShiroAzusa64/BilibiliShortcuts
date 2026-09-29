@@ -4,11 +4,11 @@
         "keylist_previous":["ArrowLeft","1"],
         "keylist_like":["Shift"],
         "keylist_enter":["/","z"],
-        "keylist_exit":["Escape","\\"]
+        "keylist_exit":["Escape","\\","Backspace"]
     },
     "video":{
         "keylist_like":["/","z"],
-        "keylist_exit":["Escape","\\"],
+        "keylist_exit":["Escape","\\","Backspace"],
         "keylist_accelate":["Shift","1","2"]
     },
     "index":{
