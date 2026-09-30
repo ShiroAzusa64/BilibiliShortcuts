@@ -167,6 +167,9 @@ function refreshVideos(){
 const historyStack=new videoHistory(10);
 
 async function handleKey(event) {
+    if(document.activeElement.matches('input, textarea, select')){
+        return;
+    }
     var config=await chrome.runtime.sendMessage({type: "GET_CONFIG"});
     config=config.data.index;
     var index;

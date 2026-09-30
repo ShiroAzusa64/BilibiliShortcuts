@@ -55,6 +55,9 @@ document.addEventListener("keyup", async (event) =>{
 }, true);
 var toggleVideoPlaybackRate=false;
 document.addEventListener("keydown", async (event) => {
+    if(document.activeElement.matches('input, textarea, select')){
+        return;
+    }
     var config=await chrome.runtime.sendMessage({type: "GET_CONFIG"});
     config=config.data.video;
     var action=Object.keys(config).find((key) => {
